@@ -8,8 +8,8 @@ use RuntimeException;
 trait SearchableTrait
 {
     protected $_rulesFormat = [
-        'string' => '%%s%',
-        'date'   => '%s%',
+        'string_search' => '%%%s%%',
+        'date_equal'   => '%s%%',
         'number_equal' => '%s',
     ];
 
