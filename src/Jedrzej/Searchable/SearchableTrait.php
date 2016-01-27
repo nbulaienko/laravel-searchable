@@ -7,6 +7,12 @@ use RuntimeException;
 
 trait SearchableTrait
 {
+    protected $_rulesFormat = [
+        'string' => '%%s%',
+        'date'   => '%s%',
+        'number_equal' => '%s',
+    ];
+
     public function getQueryModeParameterName()
     {
         return 'mode';
@@ -17,10 +23,12 @@ trait SearchableTrait
      *
      * @param Builder $builder query builder
      * @param array   $query   query parameters to use for search - Input::all() is used by default
+     * @param array   $parseRules rules for parsing query (without using '%', 'ge' etc in browser query)
      */
-    public function scopeFiltered(Builder $builder, array $query = [])
+    public function scopeFiltered(Builder $builder, array $query = [], array $parseRules = [])
     {
         $query = (array)($query ?: Input::all());
+        $query = $this->parseQueryFormat($query, $parseRules);
 
         $mode = $this->getQueryMode($query);
         $query = $this->filterNonSearchableParameters($query);
@@ -189,5 +197,28 @@ trait SearchableTrait
         }
 
         return array_except($query, $nonSearchableParameterNames);
+    }
+
+    /**
+    * Formatting query attributes applying rules
+    *
+    * @param  array $query query
+    * @param  array $rules rules for parsing query format
+    * @return array $query formatted query using rules
+    */
+    protected function parseQueryFormat(array $query, $rules = []) {
+        if (empty($rules)) $rules = property_exists($this, 'searchable_parse_rules') ? $this->searchable_parse_rules : [];
+
+        if (!empty($rules)) {
+            foreach ($query as $key => $value) {
+                $keyRuleName = isset($rules[$key]) ? $rules[$key] : false;
+                
+                if ($keyRuleName && isset($this->_rulesFormat[$keyRuleName])) {
+                    $query[$key] = sprintf($this->_rulesFormat[$keyRuleName], $value);
+                }
+            }
+        }
+        
+        return $query;
     }
 }

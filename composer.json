@@ -1,5 +1,5 @@
 {
-  "name": "jedrzej/searchable",
+  "name": "nbulaienko/laravel-searchable",
   "description": "Searchable trait for Laravel's Eloquent models - filter your models using request parameters",
   "keywords": [
     "laravel",
@@ -17,6 +17,10 @@
     {
       "name": "Jędrzej Kuryło",
       "email": "jedrzej.kurylo@gmail.com"
+    },
+    {
+    	"name": "Nickolay Bulaienko",
+    	"email": "nbulaienko@gmail.com"
     }
   ],
   "require": {
